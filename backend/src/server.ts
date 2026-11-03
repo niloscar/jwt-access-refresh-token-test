@@ -1,6 +1,7 @@
 import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
+import { env } from './config/env.ts'
 
 import authRouter from './routes/auth.router.ts'
 
@@ -17,5 +18,5 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRouter)
 
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`)
+  console.log(`Server running in ${env.NODE_ENV} mode on port ${PORT}`)
 })
