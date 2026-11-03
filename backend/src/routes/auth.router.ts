@@ -17,6 +17,8 @@ router.post('/sign-in', (req: Request, res: Response) => {
   }
 
   if (email === USER.email && password === USER.password) {
+    // ONTODO: Implement sign-in logic (e.g., set session, cookies, etc.)
+
     return res.json({ message: 'Sign in successful', user: { id: USER.id, email: USER.email } })
   } else {
     return res.status(401).json({ message: 'Invalid email or password' })
@@ -24,17 +26,19 @@ router.post('/sign-in', (req: Request, res: Response) => {
 })
 
 router.post('/sign-out', (req: Request, res: Response) => {
-  // Simulate a successful sign-out response
+  // ONTODO: Implement sign-out logic (e.g., clear session, cookies, etc.)
   res.json({ message: 'Sign out successful' })
 })
 
 router.get('/protected', (req: Request, res: Response) => {
-  // Simulate a protected page response
+  // ONTODO: Implement access control logic (e.g., check session, cookies, etc.)
+
   res.json({ message: 'Access granted to protected page' })
 })
 
 router.get('/refresh', (req: Request, res: Response) => {
-  // Simulate a refresh response
+  // ONTODO: Implement refresh logic (e.g., refresh tokens, update session, etc.)
+
   res.json({ message: 'Refresh successful' })
 })
 
