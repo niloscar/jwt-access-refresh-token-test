@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { getHealth } from './api/healthApi'
-import { signIn } from './api/authApi'
+import { signIn, signOut } from './api/authApi'
 import { isAxiosError } from 'axios'
+import useTheme from './hooks/useTheme'
+import ThemeSwitch from './components/ThemeSwitch'
 import Loading from './components/Loading'
 
 import styles from './App.module.css'
@@ -11,8 +13,9 @@ export default function App() {
   const [responseStatus, setResponseStatus] = useState<number | null>(null)
   const [backendResponse, setBackendResponse] = useState<string | null>(null)
   const [loadingBackendResponse, setLoadingBackendResponse] = useState<boolean>(false)
-
   const [cookieMessage, setCookieMessage] = useState<string | null>(null)
+  
+  const { theme, toggleTheme } = useTheme()
 
   useEffect(() => {
     const fetchHealth = async () => {
@@ -28,9 +31,12 @@ export default function App() {
     fetchHealth()
   }, [])
 
+  function checkCookies() {
+    setCookieMessage(document.cookie || 'No cookies accessible to JavaScript')
+  }
+
   async function handleSignIn() {
     setLoadingBackendResponse(true)
-    setCookieMessage(null)
 
     try {
       const response = await signIn({
@@ -42,18 +48,6 @@ export default function App() {
 
       setResponseStatus(response.status)
       setBackendResponse(JSON.stringify(response.data, null, 2))
-
-      const cookie = document.cookie
-
-      if (cookie) {
-        setCookieMessage(cookie)
-      } else {
-        setCookieMessage('No cookies accessible to JavaScript')
-
-        setTimeout(() => {
-          setCookieMessage(null)
-        }, 1000)
-      }
     } catch (error) {
       if (isAxiosError(error) && error.response) {
         setResponseStatus(error.response.status)
@@ -62,6 +56,7 @@ export default function App() {
         console.error('Error signing in:', error)
       }
     } finally {
+      checkCookies()
       setLoadingBackendResponse(false)
     }
   }
@@ -76,13 +71,33 @@ export default function App() {
     console.log('Refresh button clicked')
   }
 
-  function handleSignOut() {
-    // Implement sign-out logic here
-    console.log('Sign out button clicked')
+  async function handleSignOut() {
+    setLoadingBackendResponse(true)
+
+    try {
+      const response = await signOut()
+
+      await delay(1000)
+
+      setResponseStatus(response.status)
+      setBackendResponse(JSON.stringify(response.data, null, 2))
+    } catch (error) {
+      if (isAxiosError(error) && error.response) {
+        setResponseStatus(error.response.status)
+        setBackendResponse(JSON.stringify(error.response.data, null, 2))
+      } else {
+        console.error('Error signing out:', error)
+      }
+    } finally {
+      checkCookies()
+      setLoadingBackendResponse(false)
+    }
   }
 
   return (
     <>
+      <ThemeSwitch theme={theme} toggleTheme={toggleTheme} />
+
       <h1>Hello World</h1>
 
       <p>
@@ -108,13 +123,17 @@ export default function App() {
               <label htmlFor="backendResponse">Backend Response:</label>
               <pre>
                 <code id="backendResponse">
-                  {loadingBackendResponse
-                    ? <Loading message="Loading" />
-                    : backendResponse}
+                  {loadingBackendResponse ? (
+                    <Loading message="Loading" />
+                  ) : (
+                    backendResponse
+                  )}
                 </code>
 
                 {!loadingBackendResponse && responseStatus !== null && (
-                  <span className={`${styles.responseStatus} ${responseStatus >= 200 && responseStatus < 300
+                  <span
+                    className={`${styles.responseStatus} ${
+                      responseStatus >= 200 && responseStatus < 300
                         ? styles.apiHealthy
                         : styles.apiUnhealthy
                     }`}
@@ -127,19 +146,15 @@ export default function App() {
           )}
 
           {(loadingBackendResponse || cookieMessage) && (
-            <section
-              className={`${styles.codeSection} ${
-                cookieMessage === 'No cookies accessible to JavaScript'
-                  ? styles.fadeOut
-                  : ''
-              }`}
-            >
+            <section className={styles.codeSection}>
               <label htmlFor="cookieResponse">Cookie:</label>
               <pre>
                 <code id="cookieResponse">
-                  {loadingBackendResponse
-                    ? <Loading message="Loading" />
-                    : cookieMessage}
+                  {loadingBackendResponse ? (
+                    <Loading message="Loading" />
+                  ) : (
+                    cookieMessage
+                  )}
                 </code>
               </pre>
             </section>

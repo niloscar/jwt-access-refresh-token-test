@@ -1,0 +1,20 @@
+.themeSwitch  {
+  position: fixed;
+  top: 0;
+  right: 0;
+  background-color: transparent;
+  color: currentColor;
+  border: none;
+  padding: 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 24px;
+
+    -webkit-tap-highlight-color: transparent;
+
+  &:hover {
+    color: var(--text-h);
+  }
+
+  
+}

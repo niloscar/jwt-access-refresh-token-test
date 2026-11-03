@@ -1,13 +1,39 @@
 <!doctype html>
 <html lang="en">
+
   <head>
     <meta charset="UTF-8" />
+
+    <style>
+      html {
+        background: #fff;
+      }
+
+      html[data-theme='dark'] {
+        background: #16171d;
+      }
+    </style>
+
+    <script>
+      const savedTheme = localStorage.getItem('theme')
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+
+      const theme =
+        savedTheme === 'light' || savedTheme === 'dark'
+          ? savedTheme
+          : prefersDark ? 'dark' : 'light'
+
+      document.documentElement.dataset.theme = theme
+    </script>
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Oscars Fullstackstartare</title>
   </head>
+
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
+
 </html>
