@@ -44,8 +44,6 @@ export default function App() {
         password: 'password'
       })
 
-      await delay(1000)
-
       setResponseStatus(response.status)
       setBackendResponse(JSON.stringify(response.data, null, 2))
     } catch (error) {
@@ -66,8 +64,6 @@ export default function App() {
 
     try {
       const response = await getProtectedPage()
-
-      await delay(1000)
 
       setResponseStatus(response.status)
       setBackendResponse(JSON.stringify(response.data, null, 2))
@@ -90,8 +86,6 @@ export default function App() {
     try {
       const response = await refreshToken()
 
-      await delay(1000)
-
       setResponseStatus(response.status)
       setBackendResponse(JSON.stringify(response.data, null, 2))
     } catch (error) {
@@ -112,8 +106,6 @@ export default function App() {
 
     try {
       const response = await signOut()
-
-      await delay(1000)
 
       setResponseStatus(response.status)
       setBackendResponse(JSON.stringify(response.data, null, 2))
@@ -199,8 +191,4 @@ export default function App() {
       )}
     </>
   )
-}
-
-async function delay(ms: number) {
-  await new Promise((resolve) => setTimeout(resolve, ms))
 }
