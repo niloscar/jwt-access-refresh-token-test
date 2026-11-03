@@ -17,7 +17,6 @@ const REFRESH_PATH = '/api/auth/refresh'
 export function signIn(req: Request, res: Response) {
   const { email, password } = req.body
 
-  // ONTODO: Validate email and password better
   if (!email || !password) {
     return res.status(400).json({ message: 'Email and password are required' })
   }
