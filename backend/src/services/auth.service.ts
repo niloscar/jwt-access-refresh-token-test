@@ -3,6 +3,7 @@
  */
 
 import jwt from 'jsonwebtoken'
+import { env } from '../config/env.ts';
 
 const USERS = [
   {
@@ -37,13 +38,9 @@ export function signIn({email, password}: { email: string; password: string }) {
   }
 }
 
-export function generateAccessToken(user: { id: string; email: string }) {
-  const secret = process.env.ACCESS_TOKEN_SECRET
-  const ttl = Number(process.env.ACCESS_TOKEN_TTL)
-
-  if (!secret || !Number.isInteger(ttl) || ttl <= 0) {
-    throw new Error('ACCESS_TOKEN_SECRET and ACCESS_TOKEN_TTL must be valid environment variables')
-  }
+function generateAccessToken(user: { id: string; email: string }) {
+  const secret = env.ACCESS_TOKEN_SECRET
+  const ttl = Number(env.ACCESS_TOKEN_TTL)
 
   const accessToken = jwt.sign(
     user, 
@@ -54,13 +51,9 @@ export function generateAccessToken(user: { id: string; email: string }) {
   return accessToken
 }
 
-export function generateRefreshToken(user: { id: string; email: string }) {
-  const secret = process.env.REFRESH_TOKEN_SECRET
-  const ttl = Number(process.env.REFRESH_TOKEN_TTL)
-
-  if (!secret || !Number.isInteger(ttl) || ttl <= 0) {
-    throw new Error('REFRESH_TOKEN_SECRET and REFRESH_TOKEN_TTL must be valid environment variables')
-  }
+function generateRefreshToken(user: { id: string; email: string }) {
+  const secret = env.REFRESH_TOKEN_SECRET
+  const ttl = Number(env.REFRESH_TOKEN_TTL)
 
   const refreshToken = jwt.sign(
     user,
@@ -69,4 +62,35 @@ export function generateRefreshToken(user: { id: string; email: string }) {
   )
 
   return refreshToken
+}
+
+export function verifyAccessToken(token: string) {
+  try {
+    const payload = jwt.verify(token, env.ACCESS_TOKEN_SECRET)
+
+    return { 
+      valid: true as const, 
+      payload 
+    }
+  } catch (error) {
+    if (error instanceof jwt.TokenExpiredError || error instanceof jwt.JsonWebTokenError) {
+      return { 
+        valid: false as const, 
+        expired: error instanceof jwt.TokenExpiredError 
+      }
+    }
+
+    throw error
+  }
+}
+
+function verifyRefreshToken(token: string) {
+  const secret = env.REFRESH_TOKEN_SECRET
+
+  try {
+    const decoded = jwt.verify(token, secret)
+    return decoded
+  } catch (error) {
+    return null
+  }
 }
