@@ -112,6 +112,8 @@
   margin: 0;
   width: 100%;
   position: relative;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .codeSection label {
@@ -127,7 +129,6 @@
   font-size: .7rem;
   padding: 1rem;
   border-radius: 6px;
-  overflow-x: auto;
   width: 100%;
   text-align: left;
 }
