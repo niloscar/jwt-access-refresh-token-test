@@ -1,5 +1,6 @@
 .apiHealthy, .apiUnhealthy {
   display: inline-block;
+  font-size: .8rem;
   padding: 0 4px;
   border-radius: 6px;
   border: 1px solid;
@@ -13,4 +14,106 @@
 .apiUnhealthy {
   color: #ff0000;
   background-color: #ff00001a;
+}
+
+.nav {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 600px;
+
+  @media (max-width: 400px) {
+    margin: 0;
+    flex-direction: column;
+  }
+}
+
+.nav button {
+  flex: 1;
+  padding: .5rem 1rem;
+  border: none;
+  border: 1px solid currentColor;
+  background-color: transparent;
+  color: var(--text);
+  cursor: pointer;
+  font-size: .8rem;
+  font-family: inherit;
+  line-height: 1.5;
+  z-index: 0;
+  white-space: nowrap;
+  
+  &:first-child {
+    border-radius: 6px 0px 0px 6px;
+
+    @media (max-width: 400px) {
+      border-radius: 6px 6px 0px 0px;
+    }
+  }
+
+  &:last-child {
+    border-radius: 0px 6px 6px 0px;
+
+    @media (max-width: 400px) {
+      border-radius: 0px 0px 6px 6px;
+    }
+  }
+
+  &:not(:last-child) {
+    margin-right: -1px;
+
+    @media (max-width: 400px) {
+      margin-right: 0;
+      margin-bottom: -1px;
+    }
+  }
+
+  &:hover {
+    background-color: #f0f0f011;
+    color: var(--text-h);
+    z-index: 1;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--text-h);
+    z-index: 1;
+  }
+}
+
+.codeSection {
+  margin: 0 auto;
+  max-width: 600px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: .25rem;
+}
+
+.codeSection label {
+  display: block;
+  font-size: .8rem;
+  margin-top: 1rem;
+  margin-bottom: 0;
+  color: var(--text-muted);
+}
+
+.codeSection code {
+  font-family: monospace;
+  font-size: .7rem;
+  padding: 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  width: 100%;
+  text-align: left;
+}
+
+.codeSection pre {
+  margin: 0;
+  width: 100%;
 }
