@@ -1,4 +1,4 @@
-# JWT – Access & Refresh Token Demo
+# JWT – Access & Refresh Token Test
 
 Ett mindre övningsprojekt byggt med React, Express och TypeScript för att testa och förstå JWT-baserad autentisering med kortlivade access tokens och långlivade refresh tokens.
 
