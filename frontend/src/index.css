@@ -71,7 +71,6 @@ body {
   gap: 2rem;
   flex-direction: column;
   box-sizing: border-box;
-  justify-content: center;
 }
 
 h1,

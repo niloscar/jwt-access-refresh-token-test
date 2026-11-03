@@ -85,6 +85,19 @@
   }
 }
 
+.navContainer {
+  position: relative;
+}
+
+.navContainer p {
+  position: absolute;
+  top: calc(100% + .5rem);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: .8rem;
+  color: var(--text-muted);
+}
+
 .codeSection {
   margin: 0 auto;
   max-width: 600px;
@@ -116,4 +129,18 @@
 .codeSection pre {
   margin: 0;
   width: 100%;
+}
+
+.fadeOut {
+  animation: fadeOut 1s ease-out forwards;
+}
+
+@keyframes fadeOut {
+  0%, 25% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
 }
