@@ -1,42 +1,31 @@
-# Oscars fullstack-starter
+# JWT – Access & Refresh Token Demo
 
-En enkel boilerplate för fullstackprojekt med React, TypeScript, Vite, Node.js och Express.
+Ett mindre övningsprojekt byggt med React, Express och TypeScript för att testa och förstå JWT-baserad autentisering med kortlivade access tokens och långlivade refresh tokens.
 
-Använder npm workspaces för att hantera frontend, backend och delad kod i ett gemensamt repository.
+## Så fungerar det
 
-## Teknikstack
+- **Sign in:** Skapar en access token och en refresh token som lagras i httpOnly-cookies.
+- **Protected:** Verifierar access token innan åtkomst ges till en skyddad endpoint.
+- **Refresh:** Använder refresh token för att utfärda en ny access token.
+- **Sign out:** Rensar båda cookies och avslutar inloggningen i webbläsaren.
 
-- **Frontend:** React, TypeScript, Vite, Axios, CSS Modules
-- **Backend:** Node.js, Express, TypeScript
-- **Shared:** Gemensamma typer, konstanter och valideringsscheman
-- **Verktyg:** npm workspaces, ESLint, Prettier, concurrently
+Access token gäller i 10 sekunder och refresh token i 7 dagar.
 
-## Projektstruktur
+## Testa
 
-```text
-├── frontend/   # React-applikation
-├── backend/    # Express API
-├── shared/     # Delad kod och typer
-└── docs/       # Dokumentation
-```
+1. Starta frontend och backend med konfigurerade miljövariabler.
+2. Logga in med `user@example.com` / `password`.
+3. Testa **Protected** direkt efter inloggningen.
+4. Vänta minst 10 sekunder och testa igen. Anropet ska ge `401`.
+5. Klicka på **Refresh** och kontrollera att **Protected** fungerar igen.
+6. Klicka på **Sign out** och kontrollera att åtkomsten upphör.
 
-## Kom igång
+Använd DevTools → Application → Cookies för att undersöka hur tokens hanteras.
 
-```bash
-npm install
-npm run dev
-```
+## Från experiment till produktion
 
-Frontend körs på `http://localhost:5173` och backend på `http://localhost:3000`.
+Den huvudsakliga begränsningen är att refresh tokens enbart verifieras genom sin signatur och utgångstid. Servern kan därför inte återkalla en tidigare utfärdad token om den exempelvis har kopierats innan utloggning.
 
-Under utveckling vidarebefordrar Vite anrop till `/api` via en proxy till backend.
+För en produktionsimplementation bör refresh tokens registreras serverbaserat, roteras vid förnyelse och kunna återkallas. Det gör det även möjligt att upptäcka återanvändning av tidigare ogiltigförklarade tokens.
 
-## Bygg
-
-```bash
-npm run build
-```
-
-## Användning
-
-Skapa ett nytt repository utifrån denna mall, uppdatera projektnamnet och börja utveckla.
+Kortlivade access tokens kan fortsätta verifieras utan databasuppslag och förblir normalt giltiga tills de löper ut.
