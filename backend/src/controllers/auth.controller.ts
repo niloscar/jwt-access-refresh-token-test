@@ -2,13 +2,14 @@
  * Controller for authentication-related routes.
  */
 
+import { env } from '../config/env.ts'
 import * as service from '../services/auth.service.ts'
 import type { Request, Response, CookieOptions } from 'express'
 
 const COOKIE_OPTIONS: CookieOptions = {
   httpOnly: false,
   sameSite: 'lax',
-  secure: process.env.NODE_ENV === 'production',
+  secure: env.NODE_ENV === 'production',
 }
 
 export function signIn(req: Request, res: Response) {
@@ -27,7 +28,7 @@ export function signIn(req: Request, res: Response) {
 
   const accessTokenCookieOptions = {
     ...COOKIE_OPTIONS,
-    maxAge: Number(process.env.ACCESS_TOKEN_TTL) * 1000,
+    maxAge: Number(env.ACCESS_TOKEN_TTL) * 1000,
   }
 
   res.cookie(
@@ -39,7 +40,7 @@ export function signIn(req: Request, res: Response) {
   const refreshTokenCookieOptions = {
     ...COOKIE_OPTIONS,
     path: '/auth/refresh',
-    maxAge: Number(process.env.REFRESH_TOKEN_TTL) * 1000,
+    maxAge: Number(env.REFRESH_TOKEN_TTL) * 1000,
   }
 
   res.cookie(
@@ -60,9 +61,6 @@ export function signOut(req: Request, res: Response) {
 }
 
 export function getProtectedPage(req: Request, res: Response) {
-  // ONTODO: Check if the user is authenticated
-  // Verify the access token
-
   res.json({ message: 'Access granted to protected page' })
 }
 
