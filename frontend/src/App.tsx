@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getHealth } from './api/healthApi'
-import { signIn, signOut } from './api/authApi'
+import { signIn, signOut, getProtectedPage, refreshToken } from './api/authApi'
 import { isAxiosError } from 'axios'
 import useTheme from './hooks/useTheme'
 import ThemeSwitch from './components/ThemeSwitch'
@@ -61,14 +61,50 @@ export default function App() {
     }
   }
 
-  function handleProtectedPage() {
-    // Implement navigation to protected page logic here
-    console.log('Protected page button clicked')
+  async function handleProtectedPage() {
+    setLoadingBackendResponse(true)
+
+    try {
+      const response = await getProtectedPage()
+
+      await delay(1000)
+
+      setResponseStatus(response.status)
+      setBackendResponse(JSON.stringify(response.data, null, 2))
+    } catch (error) {
+      if (isAxiosError(error) && error.response) {
+        setResponseStatus(error.response.status)
+        setBackendResponse(JSON.stringify(error.response.data, null, 2))
+      } else {
+        console.error('Error accessing protected page:', error)
+      }
+    } finally {
+      checkCookies()
+      setLoadingBackendResponse(false)
+    }
   }
 
-  function handleRefresh() {
-    // Implement refresh logic here
-    console.log('Refresh button clicked')
+  async function handleRefresh() {
+    setLoadingBackendResponse(true)
+
+    try {
+      const response = await refreshToken()
+
+      await delay(1000)
+
+      setResponseStatus(response.status)
+      setBackendResponse(JSON.stringify(response.data, null, 2))
+    } catch (error) {
+      if (isAxiosError(error) && error.response) {
+        setResponseStatus(error.response.status)
+        setBackendResponse(JSON.stringify(error.response.data, null, 2))
+      } else {
+        console.error('Error refreshing token:', error)
+      }
+    } finally {
+      checkCookies()
+      setLoadingBackendResponse(false)
+    }
   }
 
   async function handleSignOut() {
