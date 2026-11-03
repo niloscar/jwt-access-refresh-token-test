@@ -38,7 +38,7 @@ export function signIn({email, password}: { email: string; password: string }) {
   }
 }
 
-function generateAccessToken(user: { id: string; email: string }) {
+export function generateAccessToken(user: { id: string; email: string }) {
   const secret = env.ACCESS_TOKEN_SECRET
   const ttl = Number(env.ACCESS_TOKEN_TTL)
 
@@ -84,13 +84,22 @@ export function verifyAccessToken(token: string) {
   }
 }
 
-function verifyRefreshToken(token: string) {
-  const secret = env.REFRESH_TOKEN_SECRET
-
+export function verifyRefreshToken(token: string) {
   try {
-    const decoded = jwt.verify(token, secret)
-    return decoded
+    const payload = jwt.verify(token, env.REFRESH_TOKEN_SECRET)
+
+    return {
+      valid: true as const,
+      payload
+    }
   } catch (error) {
-    return null
+    if (error instanceof jwt.TokenExpiredError || error instanceof jwt.JsonWebTokenError) {
+      return {
+        valid: false as const,
+        expired: error instanceof jwt.TokenExpiredError
+      }
+    }
+
+    throw error
   }
 }

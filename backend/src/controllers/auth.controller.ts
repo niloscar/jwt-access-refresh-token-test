@@ -7,10 +7,12 @@ import * as service from '../services/auth.service.ts'
 import type { Request, Response, CookieOptions } from 'express'
 
 const COOKIE_OPTIONS: CookieOptions = {
-  httpOnly: false,
+  httpOnly: true,
   sameSite: 'lax',
   secure: env.NODE_ENV === 'production',
 }
+
+const REFRESH_PATH = '/api/auth/refresh'
 
 export function signIn(req: Request, res: Response) {
   const { email, password } = req.body
@@ -39,7 +41,7 @@ export function signIn(req: Request, res: Response) {
 
   const refreshTokenCookieOptions = {
     ...COOKIE_OPTIONS,
-    path: '/auth/refresh',
+    path: REFRESH_PATH,
     maxAge: Number(env.REFRESH_TOKEN_TTL) * 1000,
   }
 
@@ -52,23 +54,55 @@ export function signIn(req: Request, res: Response) {
   res.json({ message: 'Sign in successful', user })
 }
 
-export function signOut(req: Request, res: Response) {
-  // ONTODO: Implement sign-out logic
-  // Remove access token
-  // Remove refresh token
+export function signOut(_req: Request, res: Response) {
+  res.clearCookie('access_token', COOKIE_OPTIONS)
+  res.clearCookie('refresh_token', {...COOKIE_OPTIONS, path: REFRESH_PATH})
 
   res.json({ message: 'Sign out successful' })
 }
 
-export function getProtectedPage(req: Request, res: Response) {
+export function getProtectedPage(_req: Request, res: Response) {
   res.json({ message: 'Access granted to protected page' })
 }
 
 export function refreshToken(req: Request, res: Response) {
-  // ONTODO: Implement refresh logic
-  // Verify the refresh token
-  // Generate a new access token
-  const newAccessToken = 'new-access-token-placeholder'
+  const token = req.cookies?.refresh_token
 
-  res.json({ message: 'Refresh successful', accessToken: newAccessToken })
+  if (typeof token !== 'string' || !token) {
+    return res.status(401).json({ message: 'Missing refresh token' })
+  }
+
+  const result = service.verifyRefreshToken(token)
+
+  if (!result.valid) {
+    return res.status(401).json({
+      message: result.expired
+        ? 'Refresh token expired'
+        : 'Invalid refresh token'
+    })
+  }
+
+  const { payload } = result
+
+  if (typeof payload === 'string' || typeof payload.id !== 'string' || typeof payload.email !== 'string') {
+    return res.status(401).json({ message: 'Invalid token payload' })
+  }
+
+  const accessToken = service.generateAccessToken({
+    id: payload.id,
+    email: payload.email
+  })
+
+  const accessTokenCookieOptions = {
+    ...COOKIE_OPTIONS,
+    maxAge: Number(env.ACCESS_TOKEN_TTL) * 1000,
+  }
+
+  res.cookie(
+    'access_token', 
+    accessToken, 
+    accessTokenCookieOptions
+  )
+
+  return res.json({ message: 'Access token refreshed' })
 }
