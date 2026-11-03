@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react'
 import { getHealth } from './api/healthApi'
 import { signIn } from './api/authApi'
+import { isAxiosError } from 'axios'
 import Loading from './components/Loading'
 
 import styles from './App.module.css'
 
 export default function App() {
   const [health, setHealth] = useState<string | null>(null)
+  const [responseStatus, setResponseStatus] = useState<number | null>(null)
   const [backendResponse, setBackendResponse] = useState<string | null>(null)
-  const [loadingBackendResponse, setLoadingBackendResponse] =
-    useState<boolean>(false)
+  const [loadingBackendResponse, setLoadingBackendResponse] = useState<boolean>(false)
 
   const [cookieMessage, setCookieMessage] = useState<string | null>(null)
 
@@ -37,10 +38,10 @@ export default function App() {
         password: 'password'
       })
 
-      const simulatedDelay = 1000
-      await new Promise((resolve) => setTimeout(resolve, simulatedDelay))
+      await delay(1000)
 
-      setBackendResponse(JSON.stringify(response, null, 2))
+      setResponseStatus(response.status)
+      setBackendResponse(JSON.stringify(response.data, null, 2))
 
       const cookie = document.cookie
 
@@ -54,7 +55,12 @@ export default function App() {
         }, 1000)
       }
     } catch (error) {
-      console.error('Error signing in:', error)
+      if (isAxiosError(error) && error.response) {
+        setResponseStatus(error.response.status)
+        setBackendResponse(JSON.stringify(error.response.data, null, 2))
+      } else {
+        console.error('Error signing in:', error)
+      }
     } finally {
       setLoadingBackendResponse(false)
     }
@@ -106,6 +112,16 @@ export default function App() {
                     ? <Loading message="Loading" />
                     : backendResponse}
                 </code>
+
+                {!loadingBackendResponse && responseStatus !== null && (
+                  <span className={`${styles.responseStatus} ${responseStatus >= 200 && responseStatus < 300
+                        ? styles.apiHealthy
+                        : styles.apiUnhealthy
+                    }`}
+                  >
+                    {responseStatus}
+                  </span>
+                )}
               </pre>
             </section>
           )}
@@ -132,4 +148,8 @@ export default function App() {
       )}
     </>
   )
+}
+
+async function delay(ms: number) {
+  await new Promise((resolve) => setTimeout(resolve, ms))
 }

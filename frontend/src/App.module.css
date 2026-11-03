@@ -108,6 +108,12 @@
   gap: .25rem;
 }
 
+.codeSection pre {
+  margin: 0;
+  width: 100%;
+  position: relative;
+}
+
 .codeSection label {
   display: block;
   font-size: .8rem;
@@ -126,9 +132,10 @@
   text-align: left;
 }
 
-.codeSection pre {
-  margin: 0;
-  width: 100%;
+.responseStatus {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
 }
 
 .fadeOut {
